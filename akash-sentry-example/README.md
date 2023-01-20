@@ -2,13 +2,13 @@
 
 > You can replace Akash with any other chain supported by the cosmos-omnibus project https://github.com/akash-network/cosmos-omnibus or is available via meta.json (see https://github.com/cosmos/chain-registry )
 
-Sentry node is the internet facing node which serves the blocks to the validator as well as distributes them from the validator when validator signs them upon his turn in the tendermint consensus.  
+Sentry node is the internet facing node which serves the blocks to the validator as well as distributes them from the validator when validator signs them upon its turn in the tendermint consensus.  
 
-Validator is not announcing its existence to the network and is getting connected only to the sentry nodes.  
+Validator does not announce its existence to the network (`pex=false` /& `private_peer_ids`) and gets connected only to the sentry nodes.  
 And ideally, validator should not be exposed on any other port than the P2P - 26656/tcp (default).  
 
-Sentry nodes always letting validator connect to them, unconditionally.  
-Sentry nodes can expose additional ports, say RPC (26657/tcp), ideally you should place it behind the load balancer and throttle so to lower the usage / reduce possibility of DoS attack.  
+Sentry nodes always letting validator connect to them, unconditionally (`unconditional_peer_ids`).  
+Sentry nodes can optionally expose additional ports, say RPC (26657/tcp), ideally you should place it behind the load balancer and throttle so to lower the usage / reduce possibility of DoS attack.  
 
 ## Howto
 
