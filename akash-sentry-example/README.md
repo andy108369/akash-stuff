@@ -5,7 +5,9 @@
 Sentry node is the internet facing node which serves the blocks to the validator as well as distributes them from the validator when validator signs them upon its turn in the tendermint consensus.  
 
 Validator does not announce its existence to the network (`pex=false` /& `private_peer_ids`) and gets connected only to the sentry nodes.  
-And ideally, validator should not be exposed on any other port than the P2P - 26656/tcp (default).  
+And ideally:
+- validator should not be exposed on any other port than the P2P - 26656/tcp (default);
+- the network link between sentries and validator should be in a private network;  
 
 Sentry nodes always letting validator connect to them, unconditionally (`unconditional_peer_ids`).  
 Sentry nodes can optionally expose additional ports, say RPC (26657/tcp), ideally you should place it behind the load balancer and throttle so to lower the usage / reduce possibility of DoS attack.  
