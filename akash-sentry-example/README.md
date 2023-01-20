@@ -23,7 +23,7 @@ Sentry nodes can expose additional ports, say RPC (26657/tcp), ideally you shoul
 
 ## Working example
 
-- validator should be only connected to the sentry!
+### validator should be only connected to the sentry nodes
 
 ```
 $ curl -s http://mtaphuelj1bft4g83pg2d4onsg.ingress.europlots.com/net_info | jq -r '.result.peers[] | [ .node_info.id + "@" + .remote_ip + (.node_info.listen_addr | gsub(".*:"; ":")), (.node_info | .listen_addr, .moniker) ] | @csv' | column -t -s","
@@ -36,7 +36,7 @@ This is why it is important to:
 - monitor your sentry nodes are caught up with the tip of the chain;
 - your validator is validating the blocks;
 
-- sentry gets connected to any node:
+### Sentry gets connected to any node
 
 ```
 $ curl -s http://gjmpnp4ag5e8v14rubecqafvt4.ingress.sandbox.ny.aksh.pw/net_info | jq -r '.result.peers[] | [ .node_info.id + "@" + .remote_ip + (.node_info.listen_addr | gsub(".*:"; ":")), (.node_info | .listen_addr, .moniker) ] | @csv' | column -t -s","
