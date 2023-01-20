@@ -1,0 +1,79 @@
+# VALIDATOR
+#
+# Sentries must be started first!
+# https://github.com/akash-network/cosmos-omnibus/tree/master/_examples/validator-and-public-sentries
+# https://hub.cosmos.network/main/validators/security.html#sentry-nodes-ddos-protection
+---
+version: "2.0"
+
+services:
+  node:
+    image: ghcr.io/ovrclk/cosmos-omnibus:v0.3.20-akash-v0.20.0
+    env:
+      - MONIKER=andy-validator-01
+      - CHAIN_JSON=https://raw.githubusercontent.com/cosmos/chain-registry/master/akash/chain.json
+      - MINIMUM_GAS_PRICES=0.025uakt
+      - FASTSYNC_VERSION=v0
+      - DEBUG=2
+      # disable p2p seeds on validator
+      - P2P_SEEDS=0
+      # pex=true enables peer exchange reactor (gossip protocol), otherwise only the list of nodes in the persistent_peers list are available for connection.
+      - AKASH_P2P_PEX=false
+      # since pex=false there is no need to set PRIVATE_PEER_IDS
+      # set to sentry node IDs
+      - AKASH_P2P_UNCONDITIONAL_PEER_IDS=<sentry-node-1-ID>,<sentry-node-2-ID>,<sentry-node-N-ID>
+      # set addr_book_strict=false if some of the nodes are on a LAN IP
+      - AKASH_P2P_ADDR_BOOK_STRICT=false
+      - AKASH_CONSENSUS_DOUBLE_SIGN_CHECK_HEIGHT=10
+      # set to sentry node id@address:port; Note: port here is the P2P node port (i.e. externalPort which forwards to 26656)
+      - P2P_PERSISTENT_PEERS=<sentry-node-1-ID>@<sentry-node-1-URI-or-IP>:<port-that-forwards-to-26656>
+      # set to sentry node RPC address (http://sentry-node-uri:port); Note: port here is the RPC port (i.e. the one that forwards to 26657)
+      - STATESYNC_RPC_SERVERS=http://<sentry-node-1-address>:80,http://<sentry-node-2-address>:80
+      - STATESYNC_SNAPSHOT_INTERVAL=500
+      - S3_KEY=<REDACTED>
+      - S3_SECRET=<REDACTED>
+      - S3_HOST=https://gateway.storjshare.io
+      - KEY_PASSWORD=<REDACTED>
+      - KEY_PATH=test1/akash/andy-validator-01
+    expose:
+      - port: 26657
+        as: 80
+        to:
+          - global: true # "true" to debug, otherwise set it to "false"
+    # params:
+    #   storage:
+    #     data:
+    #       mount: /root/.akash
+
+profiles:
+  compute:
+    node:
+      resources:
+        cpu:
+          units: 4
+        memory:
+          size: 8Gi
+        storage:
+          size: 50Gi
+          # - size: 100Mi
+          # - name: data
+          #   size: 400Gi
+          #   attributes:
+          #     persistent: true
+  placement:
+    dcloud:
+      attributes:
+        host: akash
+      # signedBy:
+      #   anyOf:
+      #     - akash1365yvmc4s7awdyj3n2sav7xfx76adc6dnmlx63
+      pricing:
+        node:
+          denom: uakt
+          amount: 1000000
+
+deployment:
+  node:
+    dcloud:
+      profile: node
+      count: 1

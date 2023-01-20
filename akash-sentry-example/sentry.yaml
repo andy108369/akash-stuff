@@ -1,0 +1,86 @@
+# SENTRY
+#
+# Sentries must be started first!
+# You should have more than 1 sentry node to avoid SPOF.
+# https://github.com/akash-network/cosmos-omnibus/tree/master/_examples/validator-and-public-sentries
+# https://hub.cosmos.network/main/validators/security.html#sentry-nodes-ddos-protection
+---
+version: "2.0"
+
+services:
+  node1:
+    image: ghcr.io/ovrclk/cosmos-omnibus:v0.3.20-akash-v0.20.0
+    env:
+      - MONIKER=andy-sentry-01
+      - CHAIN_JSON=https://raw.githubusercontent.com/cosmos/chain-registry/master/akash/chain.json
+      - MINIMUM_GAS_PRICES=0.025uakt
+      - FASTSYNC_VERSION=v0
+      # pex=true enables peer exchange reactor (gossip protocol), otherwise only the list of nodes in the persistent_peers list are available for connection.
+      - AKASH_P2P_PEX=true
+      # set to validatorID. (private peer ids will not be gossiped at all times, when pex=true)
+      - AKASH_P2P_PRIVATE_PEER_IDS=<validator-Node-ID>
+      - AKASH_P2P_UNCONDITIONAL_PEER_IDS=<validator-Node-ID>
+      # set addr_book_strict=false if some of the nodes are on a LAN IP
+      - AKASH_P2P_ADDR_BOOK_STRICT=false
+      # A) Polkachu state-sync
+      # https://polkachu.com/state_sync/akash
+      # - P2P_PERSISTENT_PEERS=d1e47b071859497089c944dc082e920403484c1a@65.108.128.201:12856
+      # - STATESYNC_RPC_SERVERS=https://akash-rpc.polkachu.com:443,https://akash-rpc.polkachu.com:443
+      # B) Polkachu snapshot (automated)
+      # - SNAPSHOT_POLKACHU=1 # contact hello@polkachu.com to get your IP whitelisted to access this endpoint, test with curl -Ls http://polkachu.com/api/v1/chains/akash/snapshot
+      # C) Polkachu snapshot (semi-automated)
+      # https://polkachu.com/tendermint_snapshots/akash
+      - SNAPSHOT_URL=https://snapshots.polkachu.com/snapshots/akash/akash_9417989.tar.lz4
+      #- SNAPSHOT_WASM_PATH=wasm
+      - SNAPSHOT_DATA_PATH=data
+      - STATESYNC_SNAPSHOT_INTERVAL=500
+      - S3_KEY=<REDACTED>
+      - S3_SECRET=<REDACTED>
+      - S3_HOST=https://gateway.storjshare.io
+      - KEY_PASSWORD=<REDACTED>
+      - KEY_PATH=test1/akash/andy-sentry-01
+    expose:
+      - port: 26657
+        as: 80
+        to:
+          - global: true
+      - port: 26656
+        to:
+          - global: true
+    # params:
+    #   storage:
+    #     data:
+    #       mount: /root/.akash
+
+profiles:
+  compute:
+    node1:
+      resources:
+        cpu:
+          units: 4
+        memory:
+          size: 8Gi
+        storage:
+          size: 50Gi
+          # - size: 100Mi
+          # - name: data
+          #   size: 400Gi
+          #   attributes:
+          #     persistent: true
+  placement:
+    dcloud:
+      attributes:
+        host: akash
+      #signedBy:
+      #  anyOf:
+      #    - akash1365yvmc4s7awdyj3n2sav7xfx76adc6dnmlx63
+      pricing:
+        node1:
+          denom: uakt
+          amount: 1000000
+
+deployment:
+  node1:
+    dcloud:
+      profile: node1
+      count: 1
