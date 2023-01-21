@@ -12,13 +12,15 @@ And ideally:
 Sentry nodes always letting validator connect to them, unconditionally (`unconditional_peer_ids`).  
 Sentry nodes can optionally expose additional ports, say RPC (26657/tcp), ideally you should place it behind the load balancer and throttle so to lower the usage / reduce possibility of DoS attack.  
 
-## Howto
+## Deployment process
 
-1. Configure S3 compatible bucket (I suggest using Storj DCS) and RW access.
-1. Update the Akash SDL manifest files in this repo accordingly.
+1. Configure S3 compatible bucket with RW access (I suggest using Storj DCS).
+1. Update the Akash SDL manifest files in this directory accordingly.
 1. Deploy the sentry nodes first and then the validator.
-1. Note down sentry node IDs and their URIs.
-1. Update your validator Akash SDL manifest file with the sentry node ID & URIs.
+1. Note down the following info from sentry nodes:
+- sentry node IDs (find in the deployment logs)
+- sentry node URI and external port to 26656 (CLI: externalPort in lease-status / GUI: Forwarded ports in CloudMos).
+1. Update your validator Akash SDL manifest file with the sentry node ID, URIs and external port.
 1. Deploy validator.
 1. Note down validator node ID and update sentry SDL manifest file with it, update the sentry deployment.
 1. Issue create-validator with your operator key and delegate enough stake for your validator to get into the active validator set.
