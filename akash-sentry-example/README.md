@@ -17,9 +17,9 @@ Sentry nodes can optionally expose additional ports, say RPC (26657/tcp), ideall
 1. Configure S3 compatible bucket with RW access (I suggest using Storj DCS).
 1. Update the Akash SDL manifest files in this directory accordingly.
 1. Deploy the sentry nodes first and then the validator.
-1. Note down the following info from sentry nodes:
-  \- sentry node ID (find in the deployment logs)
-  \- sentry node URI and external port to 26656 (CLI: externalPort in lease-status / GUI: Forwarded ports in CloudMos).
+1. Note down the following info from sentry nodes:  
+\- sentry node ID (find in the deployment logs)
+\- sentry node URI and external port to 26656 (CLI: externalPort in lease-status / GUI: Forwarded ports in CloudMos).
 1. Update your validator Akash SDL manifest file with the sentry node ID, URIs and external port.
 1. Deploy validator.
 1. Note down validator node ID and update sentry SDL manifest file with it, update the sentry deployment.
